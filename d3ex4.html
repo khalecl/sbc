@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBC 601 Lighting Controls Workshop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #dee2e6;
+        }
+        
+        .header h1 {
+            color: #495057;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #dee2e6;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px 10px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            border: none;
+            border-right: 1px solid #dee2e6;
+            min-width: 120px;
+            font-size: 13px;
+        }
+        
+        .tab:last-child {
+            border-right: none;
+        }
+        
+        .tab.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .tab:hover {
+            background: #0056b3;
+            color: white;
+        }
+        
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #dee2e6;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .requirement-card {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .requirement-card h3 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .control-demo {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .space-input {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .input-group {
+            margin: 10px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        .btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            margin: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .btn:hover {
+            background: #218838;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .checklist-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+        
+        .checklist-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 4px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: #28a745;
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        .results-table thead {
+            background: #343a40;
+            color: white;
+        }
+        
+        .results-table th, .results-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .results-table th {
+            font-weight: 600;
+        }
+        
+        .highlight-box {
+            background: #ffc107;
+            color: #212529;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .highlight-box h4 {
+            margin-bottom: 10px;
+        }
+
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .header p {
+                font-size: 1em;
+            }
+            
+            .tab {
+                font-size: 11px;
+                padding: 12px 8px;
+            }
+            
+            .requirement-card {
+                padding: 15px;
+            }
+            
+            .requirement-card h3 {
+                font-size: 1.1em;
+            }
+            
+            .btn {
+                padding: 14px 16px;
+                font-size: 16px;
+                margin: 8px 0;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .space-input {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .btn {
+                width: auto;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ SBC 601 Lighting Controls Workshop</h1>
+            <p>Interactive Training: Control Specification for Saudi Commercial Buildings</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('requirements')">📋 Requirements</button>
+            <button class="tab" onclick="showSection('placement')">📍 Placement</button>
+            <button class="tab" onclick="showSection('verification')">✅ Verification</button>
+            <button class="tab" onclick="showSection('calculator')">🧮 Calculator</button>
+        </div>
+        
+        <!-- Control Requirements Section -->
+        <div id="requirements" class="content-section active">
+            <h2 style="color: #495057; margin-bottom: 20px;">📋 Key Control Requirements</h2>
+            
+            <div class="requirement-card">
+                <h3>🕒 Automatic Lighting Shutoff</h3>
+                <p><strong>Requirement:</strong> All interior lighting must be automatically controlled using:</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>Occupancy sensors within <strong>30 minutes</strong></li>
+                    <li>Time-of-day control devices</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Reference:</strong> SBC 601 Section 9.4.1.1</p>
+            </div>
+            
+            <div class="requirement-card">
+                <h3>🎛️ Space Control</h3>
+                <p><strong>Requirement:</strong> Each enclosed space requires independent control with at least one control step between <strong>30-70% of full lighting power</strong></p>
+                <div class="control-demo">
+                    <h4>Test Your Understanding:</h4>
+                    <div class="input-group">
+                        <label>If a space has 1000W total lighting, what is the valid control range?</label>
+                        <input type="number" id="total-power" value="1000" onchange="calculateControlRange()">
+                    </div>
+                    <div id="control-range-result"></div>
+                </div>
+            </div>
+            
+            <div class="requirement-card">
+                <h3>👥 Mandatory Occupancy Sensors</h3>
+                <p><strong>Required in:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Classrooms</li>
+                    <li>Conference rooms</li>
+                    <li>Offices up to <strong>76.2 m²</strong></li>
+                    <li>Storage rooms <strong>15.24-304.8 m²</strong></li>
+                    <li>Restrooms</li>
+                </ul>
+            </div>
+            
+            <div class="requirement-card">
+                <h3>☀️ Multilevel Photocontrol</h3>
+                <p><strong>Required for:</strong> Primary sidelighted areas ≥23 m²</p>
+                <p><strong>Control Steps:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>One step between <strong>50-70%</strong> of design power</li>
+                    <li>Another step <strong>≤35%</strong> (including off)</li>
+                </ul>
+                <p><strong>Reference:</strong> SBC 601 Section 9.4.1.4</p>
+            </div>
+            
+            <div class="requirement-card">
+                <h3>🔄 Override Capability</h3>
+                <p>Manual override permitted for maximum <strong>2 hours</strong> for scheduled shutoff controls</p>
+            </div>
+            
+            <div class="requirement-card">
+                <h3>📏 Control Zone Limits</h3>
+                <ul style="margin-left: 20px;">
+                    <li>Maximum <strong>232 m²</strong> for spaces ≤929 m²</li>
+                    <li>Maximum <strong>929 m²</strong> for larger spaces</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Placement Strategies Section -->
+        <div id="placement" class="content-section">
+            <h2 style="color: #495057; margin-bottom: 20px;">📍 Sensor & Control Placement Strategies</h2>
+            
+            <div class="requirement-card">
+                <h3>🎯 Occupancy Sensor Location</h3>
+                <p>Must be located and aimed per manufacturer recommendations with status indicators operating correctly</p>
+                <div class="control-demo">
+                    <h4>Placement Checker:</h4>
+                    <div class="space-input">
+                        <div class="input-group">
+                            <label>Room Type:</label>
+                            <select id="room-type" onchange="checkSensorRequirement()">
+                                <option value="">Select room type...</option>
+                                <option value="office-small">Office (≤76.2 m²)</option>
+                                <option value="office-large">Office (>76.2 m²)</option>
+                                <option value="conference">Conference Room</option>
+                                <option value="storage-small">Storage (≤15.24 m²)</option>
+                                <option value="storage-medium">Storage (15.24-304.8 m²)</option>
+                                <option value="storage-large">Storage (>304.8 m²)</option>
+                                <option value="restroom">Restroom</option>
+                                <option value="classroom">Classroom</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Room Area (m²):</label>
+                            <input type="number" id="room-area" step="0.1" onchange="checkSensorRequirement()">
+                        </div>
+                    </div>
+                    <div id="sensor-requirement-result"></div>
+                </div>
+            </div>
+            
+            <div class="requirement-card">
+                <h3>💡 Photocontrol Sensor Remote Placement</h3>
+                <p>Light sensor must be <strong>remote from calibration adjustments location</strong> for primary sidelighted areas</p>
+                <p><strong>Calibration Access:</strong> Maximum <strong>3.4 m above finished floor</strong> and readily accessible to authorized personnel only</p>
+            </div>
+            
+            <div class="requirement-card">
+                <h3>🌅 Primary Sidelighted Areas</h3>
+                <p>Automatic daylight controls required when:</p>
+                <ul style="margin-left: 20px;">
+                    <li>Sidelighting effective aperture <strong>>0.15</strong></li>
+                    <li>Area <strong>≥23 m²</strong></li>
+                </ul>
+                <div class="control-demo">
+                    <h4>Daylight Control Calculator:</h4>
+                    <div class="space-input">
+                        <div class="input-group">
+                            <label>Sidelighted Area (m²):</label>
+                            <input type="number" id="sidelight-area" step="0.1" onchange="checkDaylightControl()">
+                        </div>
+                        <div class="input-group">
+                            <label>Effective Aperture:</label>
+                            <input type="number" id="effective-aperture" step="0.01" min="0" max="1" onchange="checkDaylightControl()">
+                        </div>
+                    </div>
+                    <div id="daylight-control-result"></div>
+                </div>
+            </div>
+            
+            <div class="requirement-card">
+                <h3>🌤️ Secondary Sidelighted Control</h3>
+                <p>Independent control required when:</p>
+                <ul style="margin-left: 20px;">
+                    <li>Combined power <strong>≥150 W</strong></li>
+                    <li>Effective aperture <strong>>0.3</strong></li>
+                </ul>
+            </div>
+            
+            <div class="requirement-card">
+                <h3>💼 Workstation-Specific Controls</h3>
+                <p>Downlight component requires:</p>
+                <ul style="margin-left: 20px;">
+                    <li>Continuous dimming</li>
+                    <li><strong>30-minute</strong> shutoff</li>
+                    <li><strong>30-second</strong> ramp-up</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Verification Checklist Section -->
+        <div id="verification" class="content-section">
+            <h2 style="color: #495057; margin-bottom: 20px;">✅ Compliance Verification Checklist</h2>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="checklist-progress" style="width: 0%;">0%</div>
+            </div>
+            
+            <h3 style="margin-top: 20px;">🧪 Functional Testing Requirements</h3>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>All occupancy sensors tested per Section 9.9.1</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Automatic time switches tested and programmed</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Daylight controls calibrated and responsive</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Status indicators operating correctly</span>
+            </div>
+            
+            <h3 style="margin-top: 20px;">📋 Documentation Requirements</h3>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Record drawings showing luminaire location and identifier</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Control and circuiting documentation within 90 days</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Arabic language operation manuals provided</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Maintenance schedules included</span>
+            </div>
+            
+            <h3 style="margin-top: 20px;">🚨 Common Specification Errors</h3>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Calibration accessibility verified (≤3.4m height)</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Sensor aiming per manufacturer specifications</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Control zone sizing within limits</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Override settings ≤2 hours maximum</span>
+            </div>
+            
+            <h3 style="margin-top: 20px;">🔍 Commissioning Verification</h3>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Controlled lighting response times verified</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Manual-ON/auto-ON operation confirmed</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Daylight areas properly identified in documentation</span>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" onchange="updateProgress()">
+                <span>Primary/secondary sidelighted areas marked</span>
+            </div>
+            
+            <div class="highlight-box" style="margin-top: 30px;">
+                <h4>📖 Key References</h4>
+                <p><strong>SBC 601:</strong> Sections 9.7.2.1, 9.7.2.2</p>
+                <p><strong>ASHRAE 90.1:</strong> Sections 9.9.1, 9.7.3</p>
+            </div>
+        </div>
+        
+        <!-- Control Requirements Calculator Section -->
+        <div id="calculator" class="content-section">
+            <h2 style="color: #495057; margin-bottom: 20px;">🧮 Control Requirements Calculator</h2>
+            
+            <div class="control-demo">
+                <h3>Space Analysis Tool</h3>
+                <div class="space-input">
+                    <div class="input-group">
+                        <label>Space Type:</label>
+                        <select id="calc-space-type">
+                            <option value="">Select space type...</option>
+                            <option value="office">Office Space</option>
+                            <option value="conference">Conference Room</option>
+                            <option value="classroom">Classroom</option>
+                            <option value="storage">Storage Room</option>
+                            <option value="restroom">Restroom</option>
+                            <option value="corridor">Corridor</option>
+                            <option value="lobby">Lobby</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Floor Area (m²):</label>
+                        <input type="number" id="calc-area" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Total Lighting Power (W):</label>
+                        <input type="number" id="calc-power" step="1">
+                    </div>
+                    <div class="input-group">
+                        <label>Has Windows/Sidelighting:</label>
+                        <select id="calc-sidelight">
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
+                        </select>
+                    </div>
+                    <div id="sidelight-options" style="display: none;">
+                        <div class="input-group">
+                            <label>Sidelighted Area (m²):</label>
+                            <input type="number" id="calc-sidelight-area" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Effective Aperture:</label>
+                            <input type="number" id="calc-aperture" step="0.01" min="0" max="1">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="analyzeSpace()">Analyze Space Requirements</button>
+                
+                <div id="analysis-results" style="display: none;">
+                    <h4 style="margin-top: 20px;">Analysis Results:</h4>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Control Type</th>
+                                <th>Required</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-tbody">
+                            <!-- Results will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+        
+        function calculateControlRange() {
+            const totalPower = parseFloat(document.getElementById('total-power').value);
+            const resultDiv = document.getElementById('control-range-result');
+            
+            if (totalPower) {
+                const minControl = totalPower * 0.3;
+                const maxControl = totalPower * 0.7;
+                
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>Valid Control Range:</strong><br>
+                        Minimum: ${minControl}W (30%)<br>
+                        Maximum: ${maxControl}W (70%)<br>
+                        <em>At least one control step must be within this range</em>
+                    </div>
+                `;
+            }
+        }
+        
+        function checkSensorRequirement() {
+            const roomType = document.getElementById('room-type').value;
+            const roomArea = parseFloat(document.getElementById('room-area').value);
+            const resultDiv = document.getElementById('sensor-requirement-result');
+            
+            let requirement = '';
+            let alertClass = 'alert-warning';
+            
+            switch(roomType) {
+                case 'office-small':
+                    if (roomArea && roomArea <= 76.2) {
+                        requirement = '✅ <strong>MANDATORY</strong> - Occupancy sensor required for offices ≤76.2 m²';
+                        alertClass = 'alert-success';
+                    } else {
+                        requirement = '❌ Area too large for small office classification';
+                        alertClass = 'alert-danger';
+                    }
+                    break;
+                case 'office-large':
+                    requirement = '⚠️ Optional - Not mandatory for offices >76.2 m²';
+                    break;
+                case 'conference':
+                    requirement = '✅ <strong>MANDATORY</strong> - Occupancy sensor required for conference rooms';
+                    alertClass = 'alert-success';
+                    break;
+                case 'storage-small':
+                    if (roomArea && roomArea < 15.24) {
+                        requirement = '⚠️ Optional - Not mandatory for storage <15.24 m²';
+                    }
+                    break;
+                case 'storage-medium':
+                    if (roomArea && roomArea >= 15.24 && roomArea <= 304.8) {
+                        requirement = '✅ <strong>MANDATORY</strong> - Occupancy sensor required for storage 15.24-304.8 m²';
+                        alertClass = 'alert-success';
+                    } else {
+                        requirement = '❌ Area outside mandatory range for storage';
+                        alertClass = 'alert-danger';
+                    }
+                    break;
+                case 'storage-large':
+                    requirement = '⚠️ Optional - Not mandatory for storage >304.8 m²';
+                    break;
+                case 'restroom':
+                    requirement = '✅ <strong>MANDATORY</strong> - Occupancy sensor required for restrooms';
+                    alertClass = 'alert-success';
+                    break;
+                case 'classroom':
+                    requirement = '✅ <strong>MANDATORY</strong> - Occupancy sensor required for classrooms';
+                    alertClass = 'alert-success';
+                    break;
+            }
+            
+            if (requirement) {
+                resultDiv.innerHTML = `<div class="alert ${alertClass}">${requirement}</div>`;
+            }
+        }
+        
+        function checkDaylightControl() {
+            const area = parseFloat(document.getElementById('sidelight-area').value);
+            const aperture = parseFloat(document.getElementById('effective-aperture').value);
+            const resultDiv = document.getElementById('daylight-control-result');
+            
+            if (area && aperture !== null && aperture !== undefined) {
+                let requirement = '';
+                let alertClass = 'alert-warning';
+                
+                if (area >= 23 && aperture > 0.15) {
+                    requirement = '✅ <strong>MANDATORY</strong> - Multilevel photocontrol required<br><em>Area ≥23m² AND Effective aperture >0.15</em>';
+                    alertClass = 'alert-success';
+                } else if (area < 23) {
+                    requirement = '⚠️ Area too small - Daylight control not mandatory (area <23m²)';
+                } else if (aperture <= 0.15) {
+                    requirement = '⚠️ Aperture too small - Daylight control not mandatory (aperture ≤0.15)';
+                } else {
+                    requirement = '⚠️ Requirements not met for mandatory daylight control';
+                }
+                
+                resultDiv.innerHTML = `<div class="alert ${alertClass}">${requirement}</div>`;
+            }
+        }
+        
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.checklist-item input[type="checkbox"]');
+            const checkedBoxes = document.querySelectorAll('.checklist-item input[type="checkbox"]:checked');
+            const progress = (checkedBoxes.length / checkboxes.length) * 100;
+            const progressFill = document.getElementById('checklist-progress');
+            
+            progressFill.style.width = `${progress}%`;
+            progressFill.textContent = `${Math.round(progress)}%`;
+            
+            if (progress === 100) {
+                progressFill.textContent = '✅ Complete!';
+            }
+        }
+        
+        function analyzeSpace() {
+            const spaceType = document.getElementById('calc-space-type').value;
+            const area = parseFloat(document.getElementById('calc-area').value);
+            const power = parseFloat(document.getElementById('calc-power').value);
+            const hasSidelight = document.getElementById('calc-sidelight').value;
+            const sidelightArea = parseFloat(document.getElementById('calc-sidelight-area').value) || 0;
+            const aperture = parseFloat(document.getElementById('calc-aperture').value) || 0;
+            
+            if (!spaceType || !area || !power) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            const resultsDiv = document.getElementById('analysis-results');
+            const tbody = document.getElementById('results-tbody');
+            
+            let results = [];
+            
+            // Basic shutoff requirement
+            results.push({
+                control: 'Automatic Shutoff',
+                required: 'YES',
+                details: 'Required for all interior lighting (≤30 min or time-of-day)'
+            });
+            
+            // Space control requirement
+            const minControl = Math.round(power * 0.3);
+            const maxControl = Math.round(power * 0.7);
+            results.push({
+                control: 'Space Control',
+                required: 'YES',
+                details: `Independent control required (${minControl}W - ${maxControl}W range)`
+            });
+            
+            // Occupancy sensor requirements
+            let occupancyRequired = false;
+            let occupancyDetails = '';
+            
+            switch(spaceType) {
+                case 'office':
+                    if (area <= 76.2) {
+                        occupancyRequired = true;
+                        occupancyDetails = 'Mandatory for offices ≤76.2 m²';
+                    } else {
+                        occupancyDetails = 'Not mandatory for offices >76.2 m²';
+                    }
+                    break;
+                case 'conference':
+                case 'classroom':
+                case 'restroom':
+                    occupancyRequired = true;
+                    occupancyDetails = `Mandatory for ${spaceType}s`;
+                    break;
+                case 'storage':
+                    if (area >= 15.24 && area <= 304.8) {
+                        occupancyRequired = true;
+                        occupancyDetails = 'Mandatory for storage 15.24-304.8 m²';
+                    } else {
+                        occupancyDetails = 'Not mandatory (area outside 15.24-304.8 m² range)';
+                    }
+                    break;
+                default:
+                    occupancyDetails = 'Check specific requirements for this space type';
+            }
+            
+            results.push({
+                control: 'Occupancy Sensors',
+                required: occupancyRequired ? 'YES' : 'NO',
+                details: occupancyDetails
+            });
+            
+            // Control zone limits
+            let zoneLimit = area <= 929 ? 232 : 929;
+            let zoneLimitStatus = area <= zoneLimit ? 'COMPLIES' : 'EXCEEDS LIMIT';
+            results.push({
+                control: 'Control Zone Limits',
+                required: zoneLimitStatus,
+                details: `Max ${zoneLimit}m² for this space size (Current: ${area}m²)`
+            });
+            
+            // Daylight controls
+            if (hasSidelight === 'yes' && sidelightArea && aperture) {
+                let daylightRequired = false;
+                let daylightDetails = '';
+                
+                if (sidelightArea >= 23 && aperture > 0.15) {
+                    daylightRequired = true;
+                    daylightDetails = 'Multilevel photocontrol required (≥23m², aperture >0.15)';
+                } else {
+                    daylightDetails = `Not required (Area: ${sidelightArea}m², Aperture: ${aperture})`;
+                }
+                
+                results.push({
+                    control: 'Daylight Controls',
+                    required: daylightRequired ? 'YES' : 'NO',
+                    details: daylightDetails
+                });
+                
+                // Secondary sidelighting
+                if (power >= 150 && aperture > 0.3) {
+                    results.push({
+                        control: 'Secondary Sidelight Control',
+                        required: 'YES',
+                        details: 'Independent control required (≥150W, aperture >0.3)'
+                    });
+                }
+            }
+            
+            // Override capability
+            results.push({
+                control: 'Manual Override',
+                required: 'YES',
+                details: 'Maximum 2-hour override for scheduled shutoff'
+            });
+            
+            // Populate results table
+            tbody.innerHTML = '';
+            results.forEach(result => {
+                const row = document.createElement('tr');
+                const requiredClass = result.required === 'YES' ? 'color: #28a745; font-weight: bold;' : 
+                                    result.required === 'NO' ? 'color: #6c757d;' : 
+                                    result.required === 'COMPLIES' ? 'color: #28a745; font-weight: bold;' :
+                                    'color: #dc3545; font-weight: bold;';
+                
+                row.innerHTML = `
+                    <td style="font-weight: 600;">${result.control}</td>
+                    <td style="${requiredClass}">${result.required}</td>
+                    <td>${result.details}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            resultsDiv.style.display = 'block';
+        }
+        
+        // Show/hide sidelight options
+        document.getElementById('calc-sidelight').addEventListener('change', function() {
+            const sidelightOptions = document.getElementById('sidelight-options');
+            if (this.value === 'yes') {
+                sidelightOptions.style.display = 'block';
+            } else {
+                sidelightOptions.style.display = 'none';
+            }
+        });
+        
+        // Initialize
+        window.onload = function() {
+            calculateControlRange();
+            updateProgress();
+        };
+    </script>
+</body>
+</html>
