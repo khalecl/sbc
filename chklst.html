@@ -10,6 +10,82 @@
             padding: 0;
             box-sizing: border-box;
         }
+        .calculator {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border: 1px solid #e9ecef;
+}
+
+.calc-input {
+    margin-bottom: 15px;
+}
+
+.calc-input label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.calc-input input, .calc-input select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.calc-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px 5px 5px 0;
+    font-weight: 500;
+}
+
+.calc-btn:hover {
+    background: #218838;
+}
+
+.calc-result {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    padding: 12px;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+.area-row, .space-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.area-input, .u-input, .space-area {
+    flex: 1;
+}
+
+.space-type {
+    flex: 2;
+}
+
+.compliance-pass {
+    background: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.compliance-fail {
+    background: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -322,29 +398,46 @@
                         </ul>
                     </div>
 
-                    <div id="arch-tools" class="tab-content">
-                        <h3>Required Tables & Calculations</h3>
-                        <div class="table-responsive">
-                            <table>
-                                <tr><th>Tool</th><th>Purpose</th><th>Reference</th></tr>
-                                <tr><td>Table 5.1</td><td>Building envelope requirements by climate zone</td><td>Section 5.5.1</td></tr>
-                                <tr><td>Table 5.2</td><td>Increased roof insulation levels</td><td>Section 5.5.3.1.1</td></tr>
-                                <tr><td>Table 5.3</td><td>SHGC multipliers for projections</td><td>Section 5.5.4.2</td></tr>
-                                <tr><td>Appendix A</td><td>U-factor, C-factor, F-factor determinations</td><td>Normative</td></tr>
-                            </table>
-                        </div>
-                        
-                        <h4>Key Calculations:</h4>
-                        <div class="formula">
-                            <strong>U-factor calculation:</strong><br>
-                            U = 1 / (R_total)<br>
-                            Where R_total = R_insulation + R_air_films + R_materials
-                        </div>
-                        <div class="formula">
-                            <strong>Area-weighted average:</strong><br>
-                            U_avg = Σ(U_i × A_i) / Σ(A_i)
-                        </div>
-                    </div>
+<div id="arch-tools" class="tab-content">
+    <h3>U-Factor Calculator</h3>
+    <div class="calculator">
+        <div class="calc-input">
+            <label>Assembly Type:</label>
+            <select id="assemblyType">
+                <option value="wall">Wall</option>
+                <option value="roof">Roof</option>
+                <option value="floor">Floor</option>
+            </select>
+        </div>
+        <div class="calc-input">
+            <label>Climate Zone:</label>
+            <select id="climateZone">
+                <option value="1">Zone 1 (Most Saudi Cities)</option>
+                <option value="2">Zone 2</option>
+                <option value="3">Zone 3 (Abha)</option>
+            </select>
+        </div>
+        <div class="calc-input">
+            <label>Insulation R-Value (m²·°C/W):</label>
+            <input type="number" id="rValue" step="0.1" placeholder="Enter R-value">
+        </div>
+        <button class="calc-btn" onclick="calculateUFactor()">Calculate U-Factor</button>
+        <div class="calc-result" id="uFactorResult"></div>
+    </div>
+    
+    <h3>Area-Weighted Average Calculator</h3>
+    <div class="calculator">
+        <div id="areaInputs">
+            <div class="area-row">
+                <input type="number" placeholder="Area 1 (m²)" class="area-input">
+                <input type="number" placeholder="U-Factor 1" class="u-input" step="0.01">
+            </div>
+        </div>
+        <button class="calc-btn" onclick="addAreaRow()">+ Add Area</button>
+        <button class="calc-btn" onclick="calculateAreaWeighted()">Calculate Average</button>
+        <div class="calc-result" id="areaWeightedResult"></div>
+    </div>
+</div>
 
                     <div id="arch-steps" class="tab-content">
                         <h3>Verification Steps</h3>
@@ -406,30 +499,43 @@
                     </div>
 
                     <div id="mech-tools" class="tab-content">
-                        <h3>Required Standards & Tables</h3>
-                        <div class="table-responsive">
-                            <table>
-                                <tr><th>Standard/Table</th><th>Purpose</th><th>Key Values</th></tr>
-                                <tr><td>SASO 2874 Table 8</td><td>VRF system efficiency</td><td>EER ≥11.2 (≤135,000 Btu/h)</td></tr>
-                                <tr><td>SASO 2874 Table 9</td><td>Computer room AC</td><td>COP ≥2.30 (<65,000 Btu/h)</td></tr>
-                                <tr><td>SASO 2884</td><td>Water heating equipment</td><td>Equipment efficiency requirements</td></tr>
-                                <tr><td>Table 7.2</td><td>Pipe insulation thickness</td><td>By fluid temperature range</td></tr>
-                                <tr><td>ASHRAE 111</td><td>Testing & balancing</td><td>System balancing procedures</td></tr>
-                            </table>
-                        </div>
-
-                        <h4>Key Calculations:</h4>
-                        <div class="formula">
-                            <strong>Equipment Efficiency:</strong><br>
-                            EER = Cooling Capacity (Btu/h) / Power Input (W)<br>
-                            COP = Cooling Capacity (W) / Power Input (W)
-                        </div>
-                        <div class="formula">
-                            <strong>System Balancing:</strong><br>
-                            Flow Rate Tolerance = ±10% of design flow<br>
-                            Fan Speed Adjustment for systems >0.75 kW
-                        </div>
-                    </div>
+    <h3>Equipment Efficiency Checker</h3>
+    <div class="calculator">
+        <div class="calc-input">
+            <label>Equipment Type:</label>
+            <select id="equipType" onchange="updateEfficiencyRequirements()">
+                <option value="vrf">VRF System</option>
+                <option value="chiller">Chiller</option>
+                <option value="computer-ac">Computer Room AC</option>
+            </select>
+        </div>
+        <div class="calc-input">
+            <label>Cooling Capacity (kW):</label>
+            <input type="number" id="capacity" placeholder="Enter capacity" onchange="updateEfficiencyRequirements()">
+        </div>
+        <div class="calc-input">
+            <label>Power Input (kW):</label>
+            <input type="number" id="powerInput" step="0.1" placeholder="Enter power input">
+        </div>
+        <div class="calc-result" id="efficiencyRequirement"></div>
+        <button class="calc-btn" onclick="checkEfficiencyCompliance()">Check Compliance</button>
+        <div class="calc-result" id="efficiencyResult"></div>
+    </div>
+    
+    <h3>Pipe Insulation Calculator</h3>
+    <div class="calculator">
+        <div class="calc-input">
+            <label>Fluid Temperature (°C):</label>
+            <input type="number" id="fluidTemp" placeholder="Enter temperature">
+        </div>
+        <div class="calc-input">
+            <label>Pipe Size (mm):</label>
+            <input type="number" id="pipeSize" placeholder="Enter diameter">
+        </div>
+        <button class="calc-btn" onclick="calculateInsulation()">Get Insulation Requirement</button>
+        <div class="calc-result" id="insulationResult"></div>
+    </div>
+</div>
 
                     <div id="mech-steps" class="tab-content">
                         <h3>Verification Steps</h3>
@@ -488,31 +594,60 @@
                         </ul>
                     </div>
 
-                    <div id="elec-tools" class="tab-content">
-                        <h3>Required Tables & Calculations</h3>
-                        <div class="table-responsive">
-                            <table>
-                                <tr><th>Table/Standard</th><th>Purpose</th><th>Key Values</th></tr>
-                                <tr><td>Table 9.2</td><td>Building Area Method LPD</td><td>Hotel: 10.8 W/m²</td></tr>
-                                <tr><td>Table 9.3</td><td>Space-by-Space Method LPD</td><td>Guest Room: 4.4 W/m²</td></tr>
-                                <tr><td>SASO 2893</td><td>Motor efficiency classes</td><td>IE efficiency requirements</td></tr>
-                                <tr><td>Section 10.4.5</td><td>Transformer efficiency</td><td>≥95% for >15 kVA</td></tr>
-                            </table>
-                        </div>
-
-                        <h4>LPD Calculations:</h4>
-                        <div class="formula">
-                            <strong>Building Area Method:</strong><br>
-                            Total LPD = Σ(Building Area × Building Type LPD)
-                        </div>
-                        <div class="formula">
-                            <strong>Space-by-Space Method:</strong><br>
-                            Total LPD = Σ(Space Area × Space Type LPD)
-                        </div>
-                        <div class="formula">
-                            <strong>Luminaire Wattage:</strong><br>
-                            Include lamps + ballasts + transformers + controls
-                        </div>
+<div id="elec-tools" class="tab-content">
+    <h3>Lighting Power Density Calculator</h3>
+    <div class="calculator">
+        <div class="calc-input">
+            <label>Calculation Method:</label>
+            <select id="lpdMethod" onchange="toggleLPDMethod()">
+                <option value="building">Building Area Method</option>
+                <option value="space">Space-by-Space Method</option>
+            </select>
+        </div>
+        
+        <div id="buildingAreaCalc">
+            <div class="calc-input">
+                <label>Building Type:</label>
+                <select id="buildingType">
+                    <option value="10.8">Hotel (10.8 W/m²)</option>
+                    <option value="9.5">Motel (9.5 W/m²)</option>
+                    <option value="9.7">Office (9.7 W/m²)</option>
+                    <option value="15.1">Retail (15.1 W/m²)</option>
+                </select>
+            </div>
+            <div class="calc-input">
+                <label>Gross Floor Area (m²):</label>
+                <input type="number" id="grossArea" placeholder="Enter area">
+            </div>
+        </div>
+        
+        <div id="spaceBySpaceCalc" style="display:none;">
+            <div id="spaceInputs">
+                <div class="space-row">
+                    <select class="space-type">
+                        <option value="4.4">Guest Room (4.4 W/m²)</option>
+                        <option value="5.2">Hotel Lobby (5.2 W/m²)</option>
+                        <option value="4.4">Corridor (4.4 W/m²)</option>
+                        <option value="5.6">Dining-Family (5.6 W/m²)</option>
+                        <option value="10.4">Kitchen (10.4 W/m²)</option>
+                    </select>
+                    <input type="number" placeholder="Area (m²)" class="space-area">
+                </div>
+            </div>
+            <button class="calc-btn" onclick="addSpaceRow()">+ Add Space</button>
+        </div>
+        
+        <button class="calc-btn" onclick="calculateLPD()">Calculate LPD</button>
+        <div class="calc-result" id="lpdResult"></div>
+        
+        <div class="calc-input" style="margin-top: 20px;">
+            <label>Installed Lighting Power (W):</label>
+            <input type="number" id="installedPower" placeholder="Enter total installed watts">
+            <button class="calc-btn" onclick="checkCompliance()">Check Compliance</button>
+            <div class="calc-result" id="complianceResult"></div>
+        </div>
+    </div>
+</div>
                     </div>
 
                     <div id="elec-steps" class="tab-content">
@@ -768,6 +903,7 @@
             initializeApp();
             updateProgress();
         });
+        
 
         function initializeApp() {
             // Add event listeners to all checkboxes
@@ -781,7 +917,200 @@
             // Show all disciplines by default
             showDiscipline('all');
         }
+// Calculator functions
+function calculateUFactor() {
+    const rValue = parseFloat(document.getElementById('rValue').value);
+    if (!rValue) return;
+    
+    const uFactor = 1 / rValue;
+    document.getElementById('uFactorResult').innerHTML = 
+        `Calculated U-Factor: <strong>${uFactor.toFixed(3)} W/m²·°C</strong>`;
+}
 
+function addAreaRow() {
+    const container = document.getElementById('areaInputs');
+    const row = document.createElement('div');
+    row.className = 'area-row';
+    row.innerHTML = `
+        <input type="number" placeholder="Area (m²)" class="area-input">
+        <input type="number" placeholder="U-Factor" class="u-input" step="0.01">
+    `;
+    container.appendChild(row);
+}
+
+function calculateAreaWeighted() {
+    const rows = document.querySelectorAll('.area-row');
+    let totalArea = 0, weightedSum = 0;
+    
+    rows.forEach(row => {
+        const area = parseFloat(row.querySelector('.area-input').value) || 0;
+        const uFactor = parseFloat(row.querySelector('.u-input').value) || 0;
+        totalArea += area;
+        weightedSum += area * uFactor;
+    });
+    
+    if (totalArea === 0) return;
+    
+    const avgUFactor = weightedSum / totalArea;
+    document.getElementById('areaWeightedResult').innerHTML = 
+        `Area-Weighted Average U-Factor: <strong>${avgUFactor.toFixed(3)} W/m²·°C</strong>`;
+}
+
+function toggleLPDMethod() {
+    const method = document.getElementById('lpdMethod').value;
+    const buildingCalc = document.getElementById('buildingAreaCalc');
+    const spaceCalc = document.getElementById('spaceBySpaceCalc');
+    
+    if (method === 'building') {
+        buildingCalc.style.display = 'block';
+        spaceCalc.style.display = 'none';
+    } else {
+        buildingCalc.style.display = 'none';
+        spaceCalc.style.display = 'block';
+    }
+}
+
+function addSpaceRow() {
+    const container = document.getElementById('spaceInputs');
+    const row = document.createElement('div');
+    row.className = 'space-row';
+    row.innerHTML = `
+        <select class="space-type">
+            <option value="4.4">Guest Room (4.4 W/m²)</option>
+            <option value="5.2">Hotel Lobby (5.2 W/m²)</option>
+            <option value="4.4">Corridor (4.4 W/m²)</option>
+            <option value="5.6">Dining-Family (5.6 W/m²)</option>
+            <option value="10.4">Kitchen (10.4 W/m²)</option>
+        </select>
+        <input type="number" placeholder="Area (m²)" class="space-area">
+    `;
+    container.appendChild(row);
+}
+
+function calculateLPD() {
+    const method = document.getElementById('lpdMethod').value;
+    let allowableLPD = 0;
+    
+    if (method === 'building') {
+        const buildingLPD = parseFloat(document.getElementById('buildingType').value);
+        const area = parseFloat(document.getElementById('grossArea').value);
+        allowableLPD = buildingLPD * area;
+        
+        document.getElementById('lpdResult').innerHTML = 
+            `Allowable Lighting Power: <strong>${allowableLPD.toFixed(0)} W</strong><br>
+             LPD: <strong>${buildingLPD} W/m²</strong>`;
+    } else {
+        const rows = document.querySelectorAll('.space-row');
+        rows.forEach(row => {
+            const spaceLPD = parseFloat(row.querySelector('.space-type').value);
+            const area = parseFloat(row.querySelector('.space-area').value) || 0;
+            allowableLPD += spaceLPD * area;
+        });
+        
+        document.getElementById('lpdResult').innerHTML = 
+            `Total Allowable Lighting Power: <strong>${allowableLPD.toFixed(0)} W</strong>`;
+    }
+    
+    window.currentAllowableLPD = allowableLPD;
+}
+
+function checkCompliance() {
+    const installed = parseFloat(document.getElementById('installedPower').value);
+    const allowable = window.currentAllowableLPD;
+    
+    if (!installed || !allowable) {
+        document.getElementById('complianceResult').innerHTML = 'Please calculate LPD first';
+        return;
+    }
+    
+    const resultDiv = document.getElementById('complianceResult');
+    if (installed <= allowable) {
+        resultDiv.className = 'calc-result compliance-pass';
+        resultDiv.innerHTML = `✅ COMPLIANT<br>Installed: ${installed}W ≤ Allowable: ${allowable.toFixed(0)}W`;
+    } else {
+        resultDiv.className = 'calc-result compliance-fail';
+        resultDiv.innerHTML = `❌ NON-COMPLIANT<br>Installed: ${installed}W > Allowable: ${allowable.toFixed(0)}W<br>Excess: ${(installed - allowable).toFixed(0)}W`;
+    }
+}
+
+function updateEfficiencyRequirements() {
+    const equipType = document.getElementById('equipType').value;
+    const capacity = parseFloat(document.getElementById('capacity').value);
+    let requirement = '';
+    
+    if (equipType === 'vrf') {
+        if (capacity <= 19.05) requirement = 'EER ≥ 11.2 Btu/W.h';
+        else if (capacity <= 39.56) requirement = 'EER ≥ 11.2 Btu/W.h';
+        else if (capacity <= 70.32) requirement = 'EER ≥ 11.0 Btu/W.h';
+        else requirement = 'EER ≥ 10.0 Btu/W.h';
+    } else if (equipType === 'computer-ac') {
+        if (capacity < 19.05) requirement = 'COP ≥ 2.30';
+        else if (capacity < 70.32) requirement = 'COP ≥ 2.20';
+        else requirement = 'COP ≥ 2.00';
+    }
+    
+    document.getElementById('efficiencyRequirement').innerHTML = 
+        `Required Efficiency: <strong>${requirement}</strong>`;
+}
+
+function checkEfficiencyCompliance() {
+    const equipType = document.getElementById('equipType').value;
+    const capacity = parseFloat(document.getElementById('capacity').value);
+    const power = parseFloat(document.getElementById('powerInput').value);
+    
+    if (!capacity || !power) return;
+    
+    let actualEff, requiredEff, unit, compliant;
+    
+    if (equipType === 'vrf') {
+        // Convert kW to Btu/h for EER calculation
+        actualEff = (capacity * 3412.14) / (power * 1000);
+        unit = 'Btu/W.h';
+        
+        if (capacity <= 39.56) requiredEff = 11.2;
+        else if (capacity <= 70.32) requiredEff = 11.0;
+        else requiredEff = 10.0;
+        
+        compliant = actualEff >= requiredEff;
+    } else {
+        // COP calculation
+        actualEff = capacity / power;
+        unit = 'COP';
+        
+        if (capacity < 19.05) requiredEff = 2.30;
+        else if (capacity < 70.32) requiredEff = 2.20;
+        else requiredEff = 2.00;
+        
+        compliant = actualEff >= requiredEff;
+    }
+    
+    const resultDiv = document.getElementById('efficiencyResult');
+    if (compliant) {
+        resultDiv.className = 'calc-result compliance-pass';
+        resultDiv.innerHTML = `✅ COMPLIANT<br>Actual: ${actualEff.toFixed(2)} ${unit} ≥ Required: ${requiredEff} ${unit}`;
+    } else {
+        resultDiv.className = 'calc-result compliance-fail';
+        resultDiv.innerHTML = `❌ NON-COMPLIANT<br>Actual: ${actualEff.toFixed(2)} ${unit} < Required: ${requiredEff} ${unit}`;
+    }
+}
+
+function calculateInsulation() {
+    const temp = parseFloat(document.getElementById('fluidTemp').value);
+    const size = parseFloat(document.getElementById('pipeSize').value);
+    
+    let thickness = 0;
+    
+    if (temp >= 41 && temp <= 60) {
+        thickness = size < 25 ? 25 : (size < 40 ? 25 : 40);
+    } else if (temp >= 61 && temp <= 93) {
+        thickness = size < 25 ? 40 : (size < 40 ? 40 : 50);
+    } else if (temp >= 94 && temp <= 121) {
+        thickness = size < 25 ? 65 : (size < 40 ? 65 : 80);
+    }
+    
+    document.getElementById('insulationResult').innerHTML = 
+        `Required Insulation Thickness: <strong>${thickness} mm</strong>`;
+}
         function showDiscipline(discipline) {
             currentDiscipline = discipline;
             
