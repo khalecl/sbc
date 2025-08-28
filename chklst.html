@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBC 601 Compliance Training Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .discipline-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .discipline-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .discipline-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .discipline-btn.active {
+            background: #e74c3c;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .section-header:hover {
+            background: #2c3e50;
+        }
+
+        .section-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ecf0f1;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: #ecf0f1;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .checklist input[type="checkbox"] {
+            margin-right: 12px;
+            margin-top: 4px;
+            transform: scale(1.2);
+        }
+
+        .checklist input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #f1f2f6;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .formula {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+            border-left: 4px solid #27ae60;
+        }
+
+        .step {
+            background: #fff3cd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .step-number {
+            background: #ffc107;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            background: #ecf0f1;
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .discipline-selector {
+                flex-direction: column;
+            }
+            
+            .discipline-btn {
+                width: 100%;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-bottom: 5px;
+                margin-right: 0;
+            }
+            
+            .section-header {
+                font-size: 16px;
+            }
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .code-ref {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏗️ SBC 601 Compliance Training Tool</h1>
+            <p>Interactive guide for building energy code compliance verification</p>
+        </div>
+
+        <div class="discipline-selector">
+            <button class="discipline-btn active" onclick="showDiscipline('all')">All Disciplines</button>
+            <button class="discipline-btn" onclick="showDiscipline('architectural')">Architectural</button>
+            <button class="discipline-btn" onclick="showDiscipline('structural')">Structural</button>
+            <button class="discipline-btn" onclick="showDiscipline('mechanical')">Mechanical</button>
+            <button class="discipline-btn" onclick="showDiscipline('electrical')">Electrical</button>
+            <button class="discipline-btn" onclick="showDiscipline('bms')">BMS/Controls</button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <!-- ARCHITECTURAL SECTION -->
+        <div class="content-section" data-discipline="architectural">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>🏛️ Architectural (Section 5: Building Envelope)</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="tab-container">
+                    <div class="tabs">
+                        <button class="tab active" onclick="showTab(this, 'arch-checklist')">Punch List</button>
+                        <button class="tab" onclick="showTab(this, 'arch-tools')">Required Tools</button>
+                        <button class="tab" onclick="showTab(this, 'arch-steps')">Verification Steps</button>
+                    </div>
+
+                    <div id="arch-checklist" class="tab-content active">
+                        <h3>Building Envelope Compliance Checklist</h3>
+                        <ul class="checklist">
+                            <li><input type="checkbox" id="arch1"><label for="arch1">Continuous air barrier designed across entire building envelope</label></li>
+                            <li><input type="checkbox" id="arch2"><label for="arch2">Air barrier components identified on construction documents</label></li>
+                            <li><input type="checkbox" id="arch3"><label for="arch3">Materials meet air permeance ≤0.02 L/s-m² @ 75 Pa</label></li>
+                            <li><input type="checkbox" id="arch4"><label for="arch4">Roof insulation values per <span class="code-ref">Table 5.1</span></label></li>
+                            <li><input type="checkbox" id="arch5"><label for="arch5">Above-grade wall insulation per <span class="code-ref">Table 5.1</span></label></li>
+                            <li><input type="checkbox" id="arch6"><label for="arch6">Below-grade wall insulation per <span class="code-ref">Table 5.1</span></label></li>
+                            <li><input type="checkbox" id="arch7"><label for="arch7">Floor insulation per <span class="code-ref">Table 5.1</span></label></li>
+                            <li><input type="checkbox" id="arch8"><label for="arch8">Slab-on-grade insulation per <span class="code-ref">Table 5.1</span></label></li>
+                            <li><input type="checkbox" id="arch9"><label for="arch9">Roof solar reflectance ≥0.55 OR thermal emittance ≥0.75</label></li>
+                            <li><input type="checkbox" id="arch10"><label for="arch10">Vertical fenestration U-factors per <span class="code-ref">Table 5.1</span></label></li>
+                            <li><input type="checkbox" id="arch11"><label for="arch11">SHGC compliance per <span class="code-ref">Table 5.1</span></label></li>
+                            <li><input type="checkbox" id="arch12"><label for="arch12">Skylight area ≤5% of gross roof area</label></li>
+                            <li><input type="checkbox" id="arch13"><label for="arch13">Opaque door U-factors per <span class="code-ref">Table 5.1</span></label></li>
+                        </ul>
+                    </div>
+
+                    <div id="arch-tools" class="tab-content">
+                        <h3>Required Tables & Calculations</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <tr><th>Tool</th><th>Purpose</th><th>Reference</th></tr>
+                                <tr><td>Table 5.1</td><td>Building envelope requirements by climate zone</td><td>Section 5.5.1</td></tr>
+                                <tr><td>Table 5.2</td><td>Increased roof insulation levels</td><td>Section 5.5.3.1.1</td></tr>
+                                <tr><td>Table 5.3</td><td>SHGC multipliers for projections</td><td>Section 5.5.4.2</td></tr>
+                                <tr><td>Appendix A</td><td>U-factor, C-factor, F-factor determinations</td><td>Normative</td></tr>
+                            </table>
+                        </div>
+                        
+                        <h4>Key Calculations:</h4>
+                        <div class="formula">
+                            <strong>U-factor calculation:</strong><br>
+                            U = 1 / (R_total)<br>
+                            Where R_total = R_insulation + R_air_films + R_materials
+                        </div>
+                        <div class="formula">
+                            <strong>Area-weighted average:</strong><br>
+                            U_avg = Σ(U_i × A_i) / Σ(A_i)
+                        </div>
+                    </div>
+
+                    <div id="arch-steps" class="tab-content">
+                        <h3>Verification Steps</h3>
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <strong>Determine Climate Zone:</strong> Use Table 11.1 to identify project location climate zone (most Saudi cities = Zone 1)
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <strong>Extract Envelope Data:</strong> Collect wall, roof, floor, and fenestration specifications from architectural drawings
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <strong>Verify Insulation Values:</strong> Check all R-values and U-factors against Table 5.1 requirements
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <strong>Calculate Fenestration Areas:</strong> Verify window/door areas don't exceed maximum percentages
+                        </div>
+                        <div class="step">
+                            <span class="step-number">5</span>
+                            <strong>Check Air Barrier Continuity:</strong> Verify continuous air barrier design and material specifications
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MECHANICAL SECTION -->
+        <div class="content-section" data-discipline="mechanical">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>🔧 Mechanical (Sections 6, 7, 8)</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="tab-container">
+                    <div class="tabs">
+                        <button class="tab active" onclick="showTab(this, 'mech-checklist')">Punch List</button>
+                        <button class="tab" onclick="showTab(this, 'mech-tools')">Required Tools</button>
+                        <button class="tab" onclick="showTab(this, 'mech-steps')">Verification Steps</button>
+                    </div>
+
+                    <div id="mech-checklist" class="tab-content active">
+                        <h3>HVAC Systems Compliance Checklist</h3>
+                        <ul class="checklist">
+                            <li><input type="checkbox" id="mech1"><label for="mech1">All equipment meets <span class="code-ref">SASO 2663/2874</span> efficiency requirements</label></li>
+                            <li><input type="checkbox" id="mech2"><label for="mech2">VRF systems meet EER requirements per capacity ranges</label></li>
+                            <li><input type="checkbox" id="mech3"><label for="mech3">Chillers meet COP requirements per SASO standards</label></li>
+                            <li><input type="checkbox" id="mech4"><label for="mech4">Load calculations per recognized engineering standards</label></li>
+                            <li><input type="checkbox" id="mech5"><label for="mech5">Equipment properly sized for calculated loads</label></li>
+                            <li><input type="checkbox" id="mech6"><label for="mech6">Duct insulation per <span class="code-ref">Table 6.8</span></label></li>
+                            <li><input type="checkbox" id="mech7"><label for="mech7">Service water heating equipment efficiency per <span class="code-ref">SASO 2884</span></label></li>
+                            <li><input type="checkbox" id="mech8"><label for="mech8">Hot water pipe insulation per <span class="code-ref">Table 7.2</span></label></li>
+                            <li><input type="checkbox" id="mech9"><label for="mech9">Minimum ventilation rates per occupancy/space type</label></li>
+                            <li><input type="checkbox" id="mech10"><label for="mech10">Noise level compliance: 35-45 dBA</label></li>
+                            <li><input type="checkbox" id="mech11"><label for="mech11">System commissioning procedures specified</label></li>
+                            <li><input type="checkbox" id="mech12"><label for="mech12">Test and balance procedures within manufacturer tolerances</label></li>
+                        </ul>
+                    </div>
+
+                    <div id="mech-tools" class="tab-content">
+                        <h3>Required Standards & Tables</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <tr><th>Standard/Table</th><th>Purpose</th><th>Key Values</th></tr>
+                                <tr><td>SASO 2874 Table 8</td><td>VRF system efficiency</td><td>EER ≥11.2 (≤135,000 Btu/h)</td></tr>
+                                <tr><td>SASO 2874 Table 9</td><td>Computer room AC</td><td>COP ≥2.30 (<65,000 Btu/h)</td></tr>
+                                <tr><td>SASO 2884</td><td>Water heating equipment</td><td>Equipment efficiency requirements</td></tr>
+                                <tr><td>Table 7.2</td><td>Pipe insulation thickness</td><td>By fluid temperature range</td></tr>
+                                <tr><td>ASHRAE 111</td><td>Testing & balancing</td><td>System balancing procedures</td></tr>
+                            </table>
+                        </div>
+
+                        <h4>Key Calculations:</h4>
+                        <div class="formula">
+                            <strong>Equipment Efficiency:</strong><br>
+                            EER = Cooling Capacity (Btu/h) / Power Input (W)<br>
+                            COP = Cooling Capacity (W) / Power Input (W)
+                        </div>
+                        <div class="formula">
+                            <strong>System Balancing:</strong><br>
+                            Flow Rate Tolerance = ±10% of design flow<br>
+                            Fan Speed Adjustment for systems >0.75 kW
+                        </div>
+                    </div>
+
+                    <div id="mech-steps" class="tab-content">
+                        <h3>Verification Steps</h3>
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <strong>Equipment Data Collection:</strong> Extract all HVAC equipment specifications from mechanical drawings
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <strong>Efficiency Verification:</strong> Cross-reference each unit against SASO 2663/2874/2884 tables
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <strong>Load Calculations Review:</strong> Verify equipment sizing matches calculated loads
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <strong>System Design Check:</strong> Verify duct/pipe sizing, insulation, and routing
+                        </div>
+                        <div class="step">
+                            <span class="step-number">5</span>
+                            <strong>Controls Integration:</strong> Review BMS sequences and energy management features
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ELECTRICAL SECTION -->
+        <div class="content-section" data-discipline="electrical">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>⚡ Electrical (Sections 9, 10)</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="tab-container">
+                    <div class="tabs">
+                        <button class="tab active" onclick="showTab(this, 'elec-checklist')">Punch List</button>
+                        <button class="tab" onclick="showTab(this, 'elec-tools')">Required Tools</button>
+                        <button class="tab" onclick="showTab(this, 'elec-steps')">Verification Steps</button>
+                    </div>
+
+                    <div id="elec-checklist" class="tab-content active">
+                        <h3>Lighting & Power Systems Checklist</h3>
+                        <ul class="checklist">
+                            <li><input type="checkbox" id="elec1"><label for="elec1">Lighting power density calculations per space type</label></li>
+                            <li><input type="checkbox" id="elec2"><label for="elec2">Hotel LPD compliance: Building Area Method = <span class="highlight">10.8 W/m²</span></label></li>
+                            <li><input type="checkbox" id="elec3"><label for="elec3">Guest rooms LPD: <span class="highlight">4.4 W/m²</span> (Space-by-Space Method)</label></li>
+                            <li><input type="checkbox" id="elec4"><label for="elec4">Automatic shutoff controls (30-minute requirement)</label></li>
+                            <li><input type="checkbox" id="elec5"><label for="elec5">Bilevel switching (30-70% of full power)</label></li>
+                            <li><input type="checkbox" id="elec6"><label for="elec6">Occupancy sensors in required spaces</label></li>
+                            <li><input type="checkbox" id="elec7"><label for="elec7">Motors ≥0.75 kW meet <span class="code-ref">SASO 2893</span> efficiency</label></li>
+                            <li><input type="checkbox" id="elec8"><label for="elec8">Transformers >15 kVA have ≥95% efficiency</label></li>
+                            <li><input type="checkbox" id="elec9"><label for="elec9">Power factor correction per statutory requirements</label></li>
+                            <li><input type="checkbox" id="elec10"><label for="elec10">Lighting control testing procedures</label></li>
+                        </ul>
+                    </div>
+
+                    <div id="elec-tools" class="tab-content">
+                        <h3>Required Tables & Calculations</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <tr><th>Table/Standard</th><th>Purpose</th><th>Key Values</th></tr>
+                                <tr><td>Table 9.2</td><td>Building Area Method LPD</td><td>Hotel: 10.8 W/m²</td></tr>
+                                <tr><td>Table 9.3</td><td>Space-by-Space Method LPD</td><td>Guest Room: 4.4 W/m²</td></tr>
+                                <tr><td>SASO 2893</td><td>Motor efficiency classes</td><td>IE efficiency requirements</td></tr>
+                                <tr><td>Section 10.4.5</td><td>Transformer efficiency</td><td>≥95% for >15 kVA</td></tr>
+                            </table>
+                        </div>
+
+                        <h4>LPD Calculations:</h4>
+                        <div class="formula">
+                            <strong>Building Area Method:</strong><br>
+                            Total LPD = Σ(Building Area × Building Type LPD)
+                        </div>
+                        <div class="formula">
+                            <strong>Space-by-Space Method:</strong><br>
+                            Total LPD = Σ(Space Area × Space Type LPD)
+                        </div>
+                        <div class="formula">
+                            <strong>Luminaire Wattage:</strong><br>
+                            Include lamps + ballasts + transformers + controls
+                        </div>
+                    </div>
+
+                    <div id="elec-steps" class="tab-content">
+                        <h3>Verification Steps</h3>
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <strong>Choose LPD Method:</strong> Building Area (10.8 W/m²) or Space-by-Space (varies by room type)
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <strong>Calculate Areas:</strong> Determine gross floor areas for each building/space type
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <strong>Calculate Installed LPD:</strong> Sum all lighting loads from electrical drawings
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <strong>Verify Compliance:</strong> Installed LPD ≤ Allowable LPD
+                        </div>
+                        <div class="step">
+                            <span class="step-number">5</span>
+                            <strong>Check Controls:</strong> Verify automatic shutoff, occupancy sensors, bilevel switching
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BMS SECTION -->
+        <div class="content-section" data-discipline="bms">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>🎛️ BMS/Controls (Sections 6.4.3, 9.4)</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="tab-container">
+                    <div class="tabs">
+                        <button class="tab active" onclick="showTab(this, 'bms-checklist')">Punch List</button>
+                        <button class="tab" onclick="showTab(this, 'bms-tools')">Required Tools</button>
+                        <button class="tab" onclick="showTab(this, 'bms-steps')">Verification Steps</button>
+                    </div>
+
+                    <div id="bms-checklist" class="tab-content active">
+                        <h3>Building Management System Checklist</h3>
+                        <ul class="checklist">
+                            <li><input type="checkbox" id="bms1"><label for="bms1">BMS system architecture documented</label></li>
+                            <li><input type="checkbox" id="bms2"><label for="bms2">HVAC control sequences specified</label></li>
+                            <li><input type="checkbox" id="bms3"><label for="bms3">Temperature control strategies defined</label></li>
+                            <li><input type="checkbox" id="bms4"><label for="bms4">Equipment staging and optimization sequences</label></li>
+                            <li><input type="checkbox" id="bms5"><label for="bms5">Energy management functions integrated</label></li>
+                            <li><input type="checkbox" id="bms6"><label for="bms6">Demand control ventilation implemented</label></li>
+                            <li><input type="checkbox" id="bms7"><label for="bms7">Occupancy-based controls for lighting</label></li>
+                            <li><input type="checkbox" id="bms8"><label for="bms8">Time scheduling programs configured</label></li>
+                            <li><input type="checkbox" id="bms9"><label for="bms9">Control system commissioning plan</label></li>
+                            <li><input type="checkbox" id="bms10"><label for="bms10">Sensor calibration procedures</label></li>
+                            <li><input type="checkbox" id="bms11"><label for="bms11">Setpoint documentation on drawings</label></li>
+                            <li><input type="checkbox" id="bms12"><label for="bms12">Integration testing between systems</label></li>
+                        </ul>
+                    </div>
+
+                    <div id="bms-tools" class="tab-content">
+                        <h3>Required Documentation & Standards</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <tr><th>Tool/Standard</th><th>Purpose</th><th>Requirements</th></tr>
+                                <tr><td>Section 6.4.3</td><td>HVAC controls requirements</td><td>Automatic controls, economizers</td></tr>
+                                <tr><td>Section 9.4.1</td><td>Lighting controls</td><td>Occupancy sensors, scheduling</td></tr>
+                                <tr><td>ASHRAE Guideline 36</td><td>Control sequences</td><td>High-performance sequences</td></tr>
+                                <tr><td>Section 6.7.2.4</td><td>System commissioning</td><td>Control verification & testing</td></tr>
+                            </table>
+                        </div>
+
+                        <h4>Control Requirements:</h4>
+                        <div class="formula">
+                            <strong>Occupancy Sensors:</strong><br>
+                            Auto-off within 30 minutes of vacancy<br>
+                            Required in offices, meeting rooms, restrooms
+                        </div>
+                        <div class="formula">
+                            <strong>Temperature Controls:</strong><br>
+                            Automatic setpoint adjustment<br>
+                            Dead band requirements
+                        </div>
+                    </div>
+
+                    <div id="bms-steps" class="tab-content">
+                        <h3>Verification Steps</h3>
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <strong>Review System Architecture:</strong> Verify BMS system layout and communication protocols
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <strong>Check Control Sequences:</strong> Verify HVAC and lighting control logic against requirements
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <strong>Verify Integration:</strong> Check mechanical and electrical system integration points
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <strong>Plan Commissioning:</strong> Define testing procedures for all control functions
+                        </div>
+                        <div class="step">
+                            <span class="step-number">5</span>
+                            <strong>Document Setpoints:</strong> Ensure all control setpoints are permanently recorded on drawings
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STRUCTURAL SECTION -->
+        <div class="content-section" data-discipline="structural">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>🏗️ Structural (Section 5.4.3)</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="tab-container">
+                    <div class="tabs">
+                        <button class="tab active" onclick="showTab(this, 'struct-checklist')">Punch List</button>
+                        <button class="tab" onclick="showTab(this, 'struct-tools')">Required Tools</button>
+                        <button class="tab" onclick="showTab(this, 'struct-steps')">Verification Steps</button>
+                    </div>
+
+                    <div id="struct-checklist" class="tab-content active">
+                        <h3>Structural Integration Checklist</h3>
+                        <ul class="checklist">
+                            <li><input type="checkbox" id="struct1"><label for="struct1">Cast-in-place concrete specifications reviewed</label></li>
+                            <li><input type="checkbox" id="struct2"><label for="struct2">Precast concrete connections detailed</label></li>
+                            <li><input type="checkbox" id="struct3"><label for="struct3">Concrete masonry walls fully grouted or painted</label></li>
+                            <li><input type="checkbox" id="struct4"><label for="struct4">Structural penetrations sealed for air barrier continuity</label></li>
+                            <li><input type="checkbox" id="struct5"><label for="struct5">Foundation wall insulation integration verified</label></li>
+                            <li><input type="checkbox" id="struct6"><label for="struct6">Thermal bridging minimized at structural connections</label></li>
+                            <li><input type="checkbox" id="struct7"><label for="struct7">Continuous insulation details at structural elements</label></li>
+                            <li><input type="checkbox" id="struct8"><label for="struct8">Air barrier continuity at structure interfaces</label></li>
+                        </ul>
+                    </div>
+
+                    <div id="struct-tools" class="tab-content">
+                        <h3>Structural Requirements</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <tr><th>Element</th><th>Requirement</th><th>Reference</th></tr>
+                                <tr><td>Concrete Masonry</td><td>Fully grouted OR painted to fill pores</td><td>Section 5.4.3.1.3(b)</td></tr>
+                                <tr><td>Cast-in-place Concrete</td><td>Meets air barrier requirements</td><td>Section 5.4.3.1.3(a)</td></tr>
+                                <tr><td>Structural Penetrations</td><td>Sealed, caulked, gasketed</td><td>Section 5.4.3.1.2</td></tr>
+                            </table>
+                        </div>
+                        <div class="formula">
+                            <strong>Air Barrier Performance:</strong><br>
+                            Assembly air leakage ≤ 0.2 L/s-m² @ 75 Pa<br>
+                            Material air permeance ≤ 0.02 L/s-m² @ 75 Pa
+                        </div>
+                    </div>
+
+                    <div id="struct-steps" class="tab-content">
+                        <h3>Verification Steps</h3>
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <strong>Review Structural Drawings:</strong> Identify all structural elements affecting building envelope
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <strong>Check Thermal Bridging:</strong> Verify continuous insulation at structural connections
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <strong>Verify Air Barrier Integration:</strong> Ensure air barrier continuity at all structural interfaces
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPLIANCE DOCUMENTATION SECTION -->
+        <div class="content-section" data-discipline="all">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>📋 Compliance Documentation (Section 4.2)</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <div class="tab-container">
+                    <div class="tabs">
+                        <button class="tab active" onclick="showTab(this, 'doc-checklist')">Punch List</button>
+                        <button class="tab" onclick="showTab(this, 'doc-tools')">Required Tools</button>
+                        <button class="tab" onclick="showTab(this, 'doc-steps')">Submission Steps</button>
+                    </div>
+
+                    <div id="doc-checklist" class="tab-content active">
+                        <h3>Required Documentation Checklist</h3>
+                        <ul class="checklist">
+                            <li><input type="checkbox" id="doc1"><label for="doc1">Construction details showing all pertinent data</label></li>
+                            <li><input type="checkbox" id="doc2"><label for="doc2">Equipment specifications and performance data</label></li>
+                            <li><input type="checkbox" id="doc3"><label for="doc3">Calculations and worksheets</label></li>
+                            <li><input type="checkbox" id="doc4"><label for="doc4">Compliance forms completed</label></li>
+                            <li><input type="checkbox" id="doc5"><label for="doc5">Vendor literature and test reports</label></li>
+                            <li><input type="checkbox" id="doc6"><label for="doc6">O&M manuals in Arabic/English prepared</label></li>
+                            <li><input type="checkbox" id="doc7"><label for="doc7">Climate zone determination documented</label></li>
+                            <li><input type="checkbox" id="doc8"><label for="doc8">Inspection hold points identified</label></li>
+                            <li><input type="checkbox" id="doc9"><label for="doc9">Commissioning plan prepared</label></li>
+                            <li><input type="checkbox" id="doc10"><label for="doc10">Testing procedures defined</label></li>
+                        </ul>
+                    </div>
+
+                    <div id="doc-tools" class="tab-content">
+                        <h3>Documentation Requirements</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <tr><th>Document Type</th><th>Content Required</th><th>Timeline</th></tr>
+                                <tr><td>Record Drawings</td><td>Equipment location, performance data, duct/pipe sizes</td><td>Within 90 days</td></tr>
+                                <tr><td>O&M Manuals</td><td>Equipment manuals, maintenance procedures, control sequences</td><td>Within 90 days</td></tr>
+                                <tr><td>Commissioning Report</td><td>Testing results, system performance verification</td><td>Before occupancy</td></tr>
+                                <tr><td>Compliance Forms</td><td>Code compliance calculations and worksheets</td><td>With permit application</td></tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="doc-steps" class="tab-content">
+                        <h3>Documentation Steps</h3>
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <strong>Gather All Drawings:</strong> Collect architectural, structural, mechanical, electrical, and BMS drawings
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <strong>Complete Compliance Calculations:</strong> Verify all code requirements and document compliance
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <strong>Prepare Submission Package:</strong> Organize all documents per local authority requirements
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <strong>Submit for Review:</strong> Submit to building official with supplemental information
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentDiscipline = 'all';
+        let totalCheckboxes = 0;
+        let checkedBoxes = 0;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            updateProgress();
+        });
+
+        function initializeApp() {
+            // Add event listeners to all checkboxes
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            totalCheckboxes = checkboxes.length;
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateProgress);
+            });
+
+            // Show all disciplines by default
+            showDiscipline('all');
+        }
+
+        function showDiscipline(discipline) {
+            currentDiscipline = discipline;
+            
+            // Update active button
+            document.querySelectorAll('.discipline-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Show/hide sections based on discipline
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                const sectionDiscipline = section.getAttribute('data-discipline');
+                if (discipline === 'all' || sectionDiscipline === discipline || sectionDiscipline === 'all') {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            // Recalculate progress for visible sections
+            updateProgress();
+        }
+
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.classList.remove('rotated');
+            } else {
+                content.classList.add('active');
+                icon.classList.add('rotated');
+            }
+        }
+
+        function showTab(tabButton, tabId) {
+            // Get the tab container
+            const tabContainer = tabButton.closest('.tab-container');
+            
+            // Remove active class from all tabs and contents in this container
+            tabContainer.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            tabContainer.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab and corresponding content
+            tabButton.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function updateProgress() {
+            // Count checked boxes in visible sections only
+            let visibleChecked = 0;
+            let visibleTotal = 0;
+            
+            const visibleSections = document.querySelectorAll('.content-section');
+            visibleSections.forEach(section => {
+                if (section.style.display !== 'none') {
+                    const checkboxes = section.querySelectorAll('input[type="checkbox"]');
+                    visibleTotal += checkboxes.length;
+                    checkboxes.forEach(checkbox => {
+                        if (checkbox.checked) {
+                            visibleChecked++;
+                        }
+                    });
+                }
+            });
+
+            // Update progress bar
+            const progressFill = document.getElementById('progressFill');
+            const percentage = visibleTotal > 0 ? (visibleChecked / visibleTotal) * 100 : 0;
+            progressFill.style.width = percentage + '%';
+            
+            // Store global values
+            checkedBoxes = visibleChecked;
+            totalCheckboxes = visibleTotal;
+        }
+
+        // Utility functions for mobile responsiveness
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            // Adjust layout for mobile if needed
+            if (isMobile()) {
+                document.querySelectorAll('.section-content.active').forEach(content => {
+                    // Ensure mobile-friendly spacing
+                    content.style.padding = '15px';
+                });
+            }
+        });
+
+        // Auto-save progress to localStorage
+        function saveProgress() {
+            const checkboxStates = {};
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkboxStates[checkbox.id] = checkbox.checked;
+            });
+            localStorage.setItem('sbc601_progress', JSON.stringify(checkboxStates));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('sbc601_progress');
+            if (saved) {
+                const checkboxStates = JSON.parse(saved);
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    if (checkboxStates[checkbox.id]) {
+                        checkbox.checked = true;
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // Add save/load functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            
+            // Save progress whenever a checkbox changes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', saveProgress);
+            });
+        });
+
+        // Export functionality for progress tracking
+        function exportProgress() {
+            const data = {
+                discipline: currentDiscipline,
+                progress: (checkedBoxes / totalCheckboxes * 100).toFixed(1) + '%',
+                checkedItems: checkedBoxes,
+                totalItems: totalCheckboxes,
+                timestamp: new Date().toISOString(),
+                checkboxStates: {}
+            };
+            
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                if (checkbox.checked) {
+                    const label = document.querySelector(`label[for="${checkbox.id}"]`);
+                    data.checkboxStates[checkbox.id] = {
+                        checked: true,
+                        label: label ? label.textContent : 'Unknown'
+                    };
+                }
+            });
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sbc601_progress_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Add export button (you can add this to the HTML if needed)
+        function addExportButton() {
+            const header = document.querySelector('.header');
+            const exportBtn = document.createElement('button');
+            exportBtn.textContent = '📄 Export Progress';
+            exportBtn.style.cssText = `
+                margin-top: 10px;
+                padding: 8px 16px;
+                background: #27ae60;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            `;
+            exportBtn.onclick = exportProgress;
+            header.appendChild(exportBtn);
+        }
+
+        // Call addExportButton if you want the export functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            addExportButton();
+        });
+    </script>
+</body>
+</html>
